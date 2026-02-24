@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+
+# Environment variables - NEVER commit this
+config/.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Logs
+logs/*.log
+
+# VS Code
+.vscode/
+
+# Mac
+.DS_Store
