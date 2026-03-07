@@ -1,20 +1,20 @@
 # SAP to Salesforce Data Sync Tool
 
-A Python-based ETL pipeline that automatically extracts customer and sales order data from SAP (simulated via PostgreSQL), transforms it into Salesforce-compatible format, and loads it into Salesforce CRM as Accounts and Opportunities.
+A Python-based ETL pipeline that automatically extracts customer and sales order data from SAP (simulated via PostgreSQL), transforms it into Salesforce-compatible format, and loads it into Salesforce CRM as Accounts and Opportunities. Includes an AI-powered Streamlit dashboard for real-time pipeline visibility and natural language querying of Salesforce data.
 
 ---
 
 ## Business Problem
 
-Enterprise sales teams using Salesforce CRM often lack visibility into customer and order data stored in SAP ERP systems. This forces sales reps to manually cross-reference two systems to get a complete picture of a customer. this leads to outdated account data, missed follow-ups, and lost revenue opportunities.
+Enterprise sales teams using Salesforce CRM often lack visibility into customer and order data stored in SAP ERP systems. This forces sales reps to manually cross-reference two systems to get a complete picture of a customer — leading to outdated account data, missed follow-ups, and lost revenue opportunities.
 
-This tool acts as the integration layer between SAP and Salesforce, ensuring sales teams always have accurate, up-to-date customer and order information directly in their CRM.
+This tool acts as the integration layer between SAP and Salesforce, ensuring sales teams always have accurate, up-to-date customer and order information directly in their CRM — surfaced through an intelligent dashboard that answers business questions in plain English.
 
 ---
 
 ## Solution
 
-An automated ETL pipeline that runs on a 24-hour schedule and syncs data from SAP into Salesforce without any manual intervention. The pipeline uses upsert logic to prevent duplicate records on every run.
+An automated ETL pipeline that runs on a 24-hour schedule and syncs data from SAP into Salesforce without any manual intervention. The pipeline uses upsert logic to prevent duplicate records on every run. A Streamlit dashboard powered by Claude AI provides real-time visibility into pipeline health, revenue trends, and account data — with a natural language interface for ad-hoc queries.
 
 ---
 
@@ -33,6 +33,10 @@ PostgreSQL (Mock SAP)
         │
         ▼
     sync.py            → Orchestrates the full pipeline on a 24-hour schedule
+        │
+        ▼
+  dashboard.py         → Streamlit dashboard pulling live data from Salesforce
+                          with AI-powered natural language query interface
 ```
 
 ---
@@ -47,6 +51,9 @@ PostgreSQL (Mock SAP)
 - **SQLAlchemy** — Database connection management
 - **python-dotenv** — Secure credential management
 - **schedule** — Pipeline scheduling
+- **Streamlit** — Interactive dashboard framework
+- **Plotly** — Data visualizations
+- **Anthropic Claude API** — AI-powered natural language query interface
 
 ---
 
@@ -78,12 +85,13 @@ PostgreSQL (Mock SAP)
 ```
 sap-salesforce-sync/
 ├── config/
-│   └── .env                  # Credentials 
+│   └── .env                  # Credentials (never committed to GitHub)
 ├── src/
 │   ├── extract.py            # Extracts data from PostgreSQL
 │   ├── transform.py          # Maps SAP fields to Salesforce fields
 │   ├── load.py               # Upserts data into Salesforce
-│   └── sync.py               # Orchestrates the full pipeline
+│   ├── sync.py               # Orchestrates the full pipeline
+│   └── dashboard.py          # AI-powered Streamlit dashboard
 ├── logs/
 │   └── sync.log              # Pipeline execution logs
 ├── tests/
@@ -100,6 +108,7 @@ sap-salesforce-sync/
 - Python 3.x
 - PostgreSQL
 - Salesforce Developer Edition org
+- Anthropic API key (for AI assistant)
 
 ### 1. Clone the repository
 ```bash
@@ -129,6 +138,8 @@ DB_PORT=5432
 DB_NAME=sap_salesforce_sync
 DB_USER=your_postgres_username
 DB_PASSWORD=your_postgres_password
+
+ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
 ### 5. Set up PostgreSQL database
@@ -146,6 +157,29 @@ Run on 24-hour schedule:
 python3 src/sync.py
 ```
 
+### 7. Launch the dashboard
+```bash
+streamlit run src/dashboard.py
+```
+
+---
+
+## Dashboard
+
+The Streamlit dashboard pulls live data directly from Salesforce and provides three sections:
+
+**Pipeline Health** — real-time metrics showing total accounts, total opportunities, total pipeline value in CAD, and last sync status with timestamp.
+
+**Business Intelligence** — four interactive charts including top 10 accounts by revenue, revenue breakdown by service type, monthly revenue trend, and customer distribution by city.
+
+**Account Explorer** — a filterable table allowing users to drill into accounts and opportunities by city and service type.
+
+**AI Sales Assistant** — a natural language chat interface powered by Claude that allows sales managers to ask plain English questions about their pipeline and accounts. Example queries:
+- "Which client has the highest total revenue?"
+- "Show me all clients in Calgary"
+- "How many enterprise implementation deals do we have?"
+- "What is the average deal size across all opportunities?"
+
 ---
 
 ## Key Features
@@ -156,10 +190,33 @@ python3 src/sync.py
 - **Error handling** — Failed records are logged without stopping the pipeline
 - **Modular architecture** — Each component is independently testable and maintainable
 - **Scheduled execution** — Runs automatically every 24 hours
+- **Live Salesforce data** — Dashboard queries Salesforce API directly, not the source database
+- **AI-powered querying** — Natural language interface for non-technical sales users
 
 ---
 
-## Sample Output
+## Unit Tests
+
+8 unit tests covering the transformation layer:
+```bash
+pytest tests/test_transform.py -v
+```
+```
+tests/test_transform.py::test_transform_customers_columns PASSED
+tests/test_transform.py::test_transform_customers_row_count PASSED
+tests/test_transform.py::test_transform_customers_country_mapping PASSED
+tests/test_transform.py::test_transform_customers_external_id PASSED
+tests/test_transform.py::test_transform_orders_columns PASSED
+tests/test_transform.py::test_transform_orders_row_count PASSED
+tests/test_transform.py::test_transform_orders_amount PASSED
+tests/test_transform.py::test_transform_orders_name_format PASSED
+
+8 passed in 0.29s
+```
+
+---
+
+## Sample Pipeline Output
 ```
 Starting sync at 2026-03-03 17:33:22
 Step 1: Extracting data from SAP (PostgreSQL)...
