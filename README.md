@@ -226,3 +226,14 @@ Accounts sync complete - Success: 25, Errors: 0
 Opportunities sync complete - Success: 50, Errors: 0
 Sync completed successfully in 52 seconds
 ```
+
+## Dashboard Preview
+
+**Pipeline Health & Business Intelligence**
+![Dashboard Overview](assets/dashboard.png)
+
+**Revenue Trends & Account Distribution**
+![Revenue Trends](assets/dashboard2.png)
+
+**Account Explorer & AI Sales Assistant**
+![Account Explorer and AI Assistant](assets/dashboard3.png)
