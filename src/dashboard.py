@@ -42,7 +42,6 @@ def load_accounts():
         SELECT Id, Name, BillingCity, BillingCountry, Phone, 
                Industry, Type, External_SAP_ID__c
         FROM Account 
-        WHERE External_SAP_ID__c != null
     """)
     return pd.DataFrame(result['records']).drop(columns=['attributes'])
 
@@ -54,7 +53,6 @@ def load_opportunities():
                Description, AccountId, External_SAP_Order_ID__c,
                CurrencyIsoCode
         FROM Opportunity 
-        WHERE External_SAP_Order_ID__c != null
     """)
     return pd.DataFrame(result['records']).drop(columns=['attributes'])
 
